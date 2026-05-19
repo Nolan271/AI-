@@ -1,0 +1,46 @@
+<template id="scene-avatar-template">
+  <div data-composition-id="scene-avatar" data-width="1920" data-height="1080">
+    <div class="vignette"></div>
+    <div class="glow-center" style="opacity:0.6;"></div>
+
+    <div class="scene-content" style="max-width:75%;">
+      <div class="accent-line" id="a-s1-line"></div>
+      <div class="headline-serif small" id="a-s1-title" style="font-size:42px;">
+        {{AVATAR_LINE}}
+      </div>
+      <div class="body-text light" id="a-s1-body" style="margin-top:16px; max-width:1000px;">
+        {{AVATAR_SPEECH}}
+      </div>
+    </div>
+
+    <!-- PiP 虚拟人插槽: avatar-overlay.js 会挂载到此容器 -->
+    <div id="avatar-pip-container"
+         style="position:absolute; bottom:60px; right:60px; width:320px; height:480px;
+                border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.5);
+                border:1px solid rgba(201,168,76,0.3); z-index:10;">
+      <div id="avatar-three-root" style="width:100%;height:100%;"></div>
+    </div>
+
+    <div class="bottom-bar"></div>
+    <div class="logo-text">{{COMPANY_NAME}}</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+    </script>
+    <script type="module" src="{{AVATAR_SCRIPT_PATH}}"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.from("#a-s1-line",  { scaleX: 0, opacity: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.from("#a-s1-title", { y: 25, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.3);
+      tl.from("#a-s1-body",  { y: 20, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.9);
+      tl.from("#avatar-pip-container", { scale: 0.8, opacity: 0, duration: 0.5, ease: "back.out(1.7)" }, 1.5);
+      window.__timelines["scene-avatar"] = tl;
+    </script>
+  </div>
+</template>

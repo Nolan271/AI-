@@ -1,0 +1,50 @@
+<template id="scene6-template">
+  <div data-composition-id="scene6" data-width="1920" data-height="1080">
+    <div class="vignette"></div>
+    <div class="glow-left"></div>
+    <div class="grid-overlay"></div>
+    <div class="ghost-text gold-gradient" style="font-size:110px;top:-10px;right:20px;" data-layout-allow-overflow>违规必究</div>
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+    <div class="bottom-bar"></div>
+
+    <div class="scene-content">
+      <div class="label-gold" id="s6-label">违规违纪管理</div>
+      <div class="accent-line" id="s6-accent"></div>
+      <div class="headline-serif small" id="s6-title" style="font-size:46px;">纪律红线·切勿触碰</div>
+      <div class="rule-grid" id="s6-rules" style="margin-top:16px;">
+        <div class="rule-card" style="border-left-color:#c9a84c;">
+          <div class="title">一般违纪</div>
+          <div class="desc">违反规章制度情节较轻<br/>→ 通报批评</div>
+        </div>
+        <div class="rule-card" style="border-left-color:#d4a038;">
+          <div class="title" style="color:#d4a038;">较重违纪</div>
+          <div class="desc">工作失职 · 不服从管理<br/>→ 降职 · 降薪 · 免职</div>
+        </div>
+        <div class="rule-card" style="border-left-color:#bf2a2a;">
+          <div class="title" style="color:#bf2a2a;">严重违纪</div>
+          <div class="desc">泄露机密 · 贪污受贿<br/>→ 直接辞退 · 追究法律责任</div>
+        </div>
+      </div>
+      <div class="warning-line body-text" id="s6-note" style="margin-top:16px; font-size:22px; max-width:1300px; color:#d4a038;">
+        严禁：泄露商业机密 · 收受贿赂 · 虚假报销 · 打架斗殴 · 私自加盖公章
+      </div>
+    </div>
+    <div class="logo-text">恒海实业集团</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.from("#s6-label",  { y: 25, opacity: 0, duration: 0.4, ease: "power2.out" }, 0);
+      tl.from("#s6-accent", { scaleX: 0, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+      tl.from("#s6-title",  { y: 30, opacity: 0, duration: 0.6, ease: "expo.out" }, 0.6);
+      tl.from(".rule-card", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out", stagger: 0.1 }, 1.2);
+      tl.from("#s6-note",   { y: 15, opacity: 0, duration: 0.4, ease: "power2.out" }, 2.2);
+      tl.to(".glow-left",   { scale: 1.05, opacity: 0.5, duration: 3.5, ease: "sine.inOut", yoyo: true, repeat: 2 }, 1);
+      window.__timelines["scene6"] = tl;
+    </script>
+  </div>
+</template>

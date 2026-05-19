@@ -1,0 +1,68 @@
+<template id="scene1-template">
+  <div data-composition-id="scene1" data-width="1920" data-height="1080">
+    <div class="vignette"></div>
+    <div class="glow-center"></div>
+    <div class="ghost-text gold-gradient" style="font-size:280px;top:-20px;right:60px;" data-layout-allow-overflow>恒海实业</div>
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+    <div class="bottom-bar"></div>
+
+    <div class="scene-content center-text">
+      <div class="accent-line center short" id="s1-line"></div>
+      <div class="label-gold" id="s1-label">WELCOME</div>
+      <div class="headline-serif large" id="s1-title" style="font-size:78px;">
+        欢迎加入<br/>恒海实业集团
+      </div>
+      <div class="body-text light" id="s1-sub" style="margin-top:20px; max-width:900px;">
+        从此刻起，我们携手踏上共同成长的旅程
+      </div>
+      <div class="info-grid" id="s1-cards" style="justify-content:center; margin-top:28px;">
+        <div class="info-card" style="min-width:160px;">
+          <div class="num">2009</div>
+          <div class="label">创始年份</div>
+        </div>
+        <div class="info-card" style="min-width:160px;">
+          <div class="num">30+</div>
+          <div class="label">子公司</div>
+        </div>
+        <div class="info-card" style="min-width:160px;">
+          <div class="num">AAA</div>
+          <div class="label">综合信用</div>
+        </div>
+        <div class="info-card" style="min-width:160px;">
+          <div class="num">500+</div>
+          <div class="label">技术专利</div>
+        </div>
+      </div>
+    </div>
+    <div class="logo-text">恒海实业集团</div>
+
+    <!-- 数字人 PiP 画中画 (HeyGen 生成的真实视频) -->
+    <div id="avatar-pip-container"
+         style="position:absolute; bottom:60px; right:60px; width:320px; height:480px;
+                border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.6);
+                border:1px solid rgba(201,168,76,0.25); z-index:10; opacity:0;">
+      <video id="avatar-video-local"
+             style="width:100%;height:100%;object-fit:cover;"
+             src="../assets/avatar-opening.mp4"
+             muted playsinline loop
+             data-start="0" data-duration="22" data-track-index="5"
+      ></video>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.from("#s1-line",  { scaleX: 0, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.2);
+      tl.from("#s1-label", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.5);
+      tl.from("#s1-title", { y: 40, opacity: 0, duration: 0.7, ease: "expo.out" }, 0.8);
+      tl.from("#s1-sub",   { y: 25, opacity: 0, duration: 0.5, ease: "power2.out" }, 1.4);
+      tl.from(".info-card", { y: 30, opacity: 0, scale: 0.95, duration: 0.5, ease: "power2.out", stagger: 0.12 }, 2.0);
+      tl.to("#avatar-pip-container", { opacity: 1, duration: 0.6, ease: "power2.out" }, 1.0);
+      tl.to(".glow-center", { scale: 1.06, opacity: 0.8, duration: 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, 3);
+      window.__timelines["scene1"] = tl;
+    </script>
+</template>

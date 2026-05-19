@@ -1,0 +1,23 @@
+{
+  "templateId": "corporate",
+  "name": "企业宣传片",
+  "description": "通用企业宣传/文化/制度介绍视频",
+  "sceneCount": 5,
+  "scenes": [
+    { "id": "welcome",  "label": "开场欢迎",   "duration": 15, "hasAvatar": true },
+    { "id": "content",  "label": "核心内容",    "duration": 30, "hasAvatar": false },
+    { "id": "avatar",   "label": "虚拟人讲解",  "duration": 20, "hasAvatar": true },
+    { "id": "data",     "label": "数据展示",    "duration": 20, "hasAvatar": false },
+    { "id": "closing",  "label": "结尾",       "duration": 10, "hasAvatar": true }
+  ],
+  "defaultStyle": {
+    "mood": "professional",
+    "primaryColor": "#c9a84c",
+    "bgColor": "#080c18",
+    "textColor": "#efe8dc",
+    "fontHeading": "Noto Serif SC",
+    "fontBody": "Noto Sans SC"
+  },
+  "avatarStrategy": "opening+closing",
+  "totalDuration": 95
+}

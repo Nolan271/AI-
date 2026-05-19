@@ -1,0 +1,34 @@
+<template id="scene-content-template">
+  <div data-composition-id="scene-content" data-width="1920" data-height="1080">
+    <div class="vignette"></div>
+    <div class="glow-bottom" style="left:50%;transform:translateX(-50%);"></div>
+    <div class="ghost-text gold-gradient" style="font-size:140px;top:50%;right:60px;transform:translateY(-50%);">{{COMPANY_NAME}}</div>
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div class="corner-bl"></div><div class="corner-br"></div>
+    <div class="bottom-bar"></div>
+
+    <div class="scene-content">
+      <div class="accent-line" id="c-s1-line"></div>
+      <div class="label-gold" id="c-s1-label">{{SECTION_TITLE}}</div>
+      <div class="headline-serif" id="c-s1-headline" style="font-size:54px; margin-top:8px;">
+        {{HEADLINE}}
+      </div>
+      <div class="body-text" id="c-s1-body" style="margin-top:20px;">
+        {{BODY_TEXT}}
+      </div>
+      {{EXTRA_CONTENT}}
+    </div>
+    <div class="logo-text">{{COMPANY_NAME}}</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.from("#c-s1-line",     { scaleX: 0, opacity: 0, duration: 0.5, ease: "power3.out" }, 0);
+      tl.from("#c-s1-label",    { y: 25, opacity: 0, duration: 0.4, ease: "power2.out" }, 0.2);
+      tl.from("#c-s1-headline", { y: 30, opacity: 0, duration: 0.6, ease: "expo.out" }, 0.8);
+      tl.from("#c-s1-body",     { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, 1.4);
+      window.__timelines["scene-content"] = tl;
+    </script>
+  </div>
+</template>

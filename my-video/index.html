@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #080c18;
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    }
+
+    /* ── Sub-composition container positioning ── */
+    [id^="el-scene"] {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1920px; height: 1080px;
+      opacity: 0;
+      overflow: hidden;
+    }
+    #el-scene1 { opacity: 1; }
+
+    /* ── Scene Layout ── */
+    .scene-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 120px 160px;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 2;
+    }
+    .scene-content.top { justify-content: flex-start; padding-top: 140px; }
+    .scene-content.center-text { align-items: center; text-align: center; }
+
+    /* ── Typography ── */
+    .label-gold {
+      font-family: "Noto Sans SC", sans-serif;
+      font-weight: 400;
+      font-size: 20px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #d4a038;
+      margin-bottom: 16px;
+    }
+    .headline-serif {
+      font-family: "Noto Serif SC", "STSong", serif;
+      font-weight: 700;
+      font-size: 68px;
+      line-height: 1.35;
+      color: #efe8dc;
+    }
+    .headline-serif.gold { color: #c9a84c; }
+    .headline-serif.large { font-size: 82px; }
+    .headline-serif.small { font-size: 54px; }
+    .body-text {
+      font-family: "Noto Sans SC", sans-serif;
+      font-weight: 350;
+      font-size: 30px;
+      line-height: 1.65;
+      color: #8a9bb0;
+      max-width: 1400px;
+    }
+    .body-text.light { color: #b8c4d4; }
+    .body-text.strong { font-weight: 500; color: #efe8dc; }
+
+    /* ── Decorative Effects ── */
+    .glow-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 900px; height: 900px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,160,56,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .glow-left {
+      position: absolute;
+      top: 50%; left: -200px;
+      width: 700px; height: 1000px;
+      transform: translateY(-50%);
+      background: radial-gradient(ellipse, rgba(74,139,194,0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .glow-bottom {
+      position: absolute;
+      bottom: -150px;
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .ghost-text {
+      position: absolute;
+      font-family: "Noto Serif SC", serif;
+      font-weight: 900;
+      color: #efe8dc;
+      opacity: 0.035;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 0.05em;
+    }
+    .ghost-text.gold-gradient {
+      background: linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.04) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 1;
+    }
+    .vignette {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(8,12,24,0.6) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .grid-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+
+    /* ── Accents & Corners ── */
+    .accent-line {
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #c9a84c 0%, rgba(201,168,76,0.3) 100%);
+      border-radius: 2px;
+      margin-bottom: 24px;
+    }
+    .accent-line.center { margin-left: auto; margin-right: auto; }
+    .accent-line.short { width: 50px; }
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute;
+      width: 40px; height: 40px;
+      border-color: rgba(201,168,76,0.12);
+      border-style: solid;
+      pointer-events: none;
+    }
+    .corner-tl { top: 40px; left: 40px; border-width: 1px 0 0 1px; }
+    .corner-tr { top: 40px; right: 40px; border-width: 1px 1px 0 0; }
+    .corner-bl { bottom: 40px; left: 40px; border-width: 0 0 1px 1px; }
+    .corner-br { bottom: 40px; right: 40px; border-width: 0 1px 1px 0; }
+    .bottom-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.3) 30%, rgba(201,168,76,0.5) 70%, transparent 100%);
+      pointer-events: none;
+    }
+    .logo-text {
+      position: absolute;
+      bottom: 40px;
+      right: 60px;
+      font-size: 16px;
+      letter-spacing: 4px;
+      color: rgba(201,168,76,0.3);
+      font-weight: 300;
+      pointer-events: none;
+    }
+
+    /* ── Cards & Grids ── */
+    .info-grid { display: flex; gap: 36px; margin-top: 20px; flex-wrap: wrap; }
+    .info-card {
+      background: linear-gradient(145deg, rgba(21,34,56,0.7) 0%, rgba(15,25,45,0.5) 100%);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 10px;
+      padding: 26px 34px;
+      min-width: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.2) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .info-card .num { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 42px; color: #c9a84c; line-height: 1.2; }
+    .info-card .label { font-size: 18px; color: #8a9bb0; margin-top: 6px; }
+
+    /* ── Values ── */
+    .value-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+    .value-item { display: flex; align-items: center; gap: 18px; }
+    .value-dot { width: 8px; height: 8px; border-radius: 50%; background: #c9a84c; flex-shrink: 0; }
+    .value-text { font-family: "Noto Serif SC", serif; font-weight: 600; font-size: 34px; color: #efe8dc; }
+
+    /* ── Rules ── */
+    .rule-grid { display: flex; gap: 28px; margin-top: 18px; flex-wrap: wrap; }
+    .rule-card {
+      background: linear-gradient(145deg, rgba(21,34,56,0.6) 0%, rgba(15,25,45,0.4) 100%);
+      border-left: 3px solid #c9a84c;
+      border-radius: 6px;
+      padding: 20px 28px;
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    .rule-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(201,168,76,0.08) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .rule-card .title { font-weight: 600; font-size: 24px; color: #c9a84c; margin-bottom: 6px; }
+    .rule-card .desc { font-size: 21px; color: #b8c4d4; line-height: 1.5; }
+
+    /* ── Tags ── */
+    .tag-list { display: flex; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
+    .tag-item {
+      background: linear-gradient(145deg, rgba(201,168,76,0.1) 0%, rgba(201,168,76,0.04) 100%);
+      border: 1px solid rgba(201,168,76,0.18);
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-size: 22px;
+      color: #b8c4d4;
+    }
+    .tag-item.gold {
+      background: linear-gradient(145deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.07) 100%);
+      border-color: rgba(201,168,76,0.3);
+      color: #c9a84c;
+      font-weight: 600;
+    }
+
+    /* ── Misc ── */
+    .time-block {
+      display: inline-block;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 28px;
+      color: #efe8dc;
+      font-family: "Noto Sans SC", sans-serif;
+      letter-spacing: 0.05em;
+    }
+    .closing-sub { font-size: 28px; color: #8a9bb0; margin-top: 24px; max-width: 1000px; margin-left: auto; margin-right: auto; }
+    .warning-line { border-left: 3px solid rgba(212,160,56,0.4); padding-left: 20px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="171" data-width="1920" data-height="1080">
+
+    <!-- ════════════════════════════════════════════
+         SCENE 1 — Welcome (0-22s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene1" data-composition-id="scene1" data-composition-src="compositions/scene1.html" data-start="0" data-duration="22" data-track-index="1"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 2 — Corporate Culture (22-46s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene2" data-composition-id="scene2" data-composition-src="compositions/scene2.html" data-start="22" data-duration="24" data-track-index="2"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 3 — Code of Conduct (46-75s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene3" data-composition-id="scene3" data-composition-src="compositions/scene3.html" data-start="46" data-duration="29" data-track-index="3"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 4 — Attendance (75-100s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene4" data-composition-id="scene4" data-composition-src="compositions/scene4.html" data-start="75" data-duration="25" data-track-index="4"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 5 — Leave & Benefits (100-130s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene5" data-composition-id="scene5" data-composition-src="compositions/scene5.html" data-start="100" data-duration="30" data-track-index="5"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 6 — Discipline (130-152s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene6" data-composition-id="scene6" data-composition-src="compositions/scene6.html" data-start="130" data-duration="22" data-track-index="6"></div>
+
+    <!-- ════════════════════════════════════════════
+         SCENE 7 — Closing (152-171s)
+         ════════════════════════════════════════════ -->
+    <div id="el-scene7" data-composition-id="scene7" data-composition-src="compositions/scene7.html" data-start="152" data-duration="19" data-track-index="7"></div>
+
+    <!-- ════════════════════════════════════════════
+         Avatar Video — PiP overlay for opening
+         (generated by HeyGen API, loaded by scene1)
+         ════════════════════════════════════════════ -->
+    <video id="avatar-opening-video"
+           src="assets/avatar-opening.mp4"
+           muted playsinline
+           data-start="0" data-duration="22" data-track-index="8"
+           style="display:none;"
+    ></video>
+    <video id="avatar-closing-video"
+           src="assets/avatar-closing.mp4"
+           muted playsinline
+           data-start="152" data-duration="19" data-track-index="9"
+           style="display:none;"
+    ></video>
+
+    <!-- ════════════════════════════════════════════
+         Audio — TTS Narration
+         ════════════════════════════════════════════ -->
+    <audio id="narration" data-start="0" data-duration="171" data-track-index="0" src="assets/narration.wav" data-volume="1"></audio>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+
+    /* ════════════════════════════════════════════
+       SCENE 1→2 Transition (22s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene1", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 21.6);
+    tl.set("#el-scene2", { opacity: 1 }, 22);
+    tl.set("#el-scene1", { visibility: "hidden" }, 22);
+
+    /* ════════════════════════════════════════════
+       SCENE 2→3 Transition (46s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene2", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 45.6);
+    tl.set("#el-scene3", { opacity: 1 }, 46);
+    tl.set("#el-scene2", { visibility: "hidden" }, 46);
+
+    /* ════════════════════════════════════════════
+       SCENE 3→4 Transition (75s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene3", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 74.6);
+    tl.set("#el-scene4", { opacity: 1 }, 75);
+    tl.set("#el-scene3", { visibility: "hidden" }, 75);
+
+    /* ════════════════════════════════════════════
+       SCENE 4→5 Transition (100s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene4", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 99.6);
+    tl.set("#el-scene5", { opacity: 1 }, 100);
+    tl.set("#el-scene4", { visibility: "hidden" }, 100);
+
+    /* ════════════════════════════════════════════
+       SCENE 5→6 Transition (130s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene5", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 129.6);
+    tl.set("#el-scene6", { opacity: 1 }, 130);
+    tl.set("#el-scene5", { visibility: "hidden" }, 130);
+
+    /* ════════════════════════════════════════════
+       SCENE 6→7 Transition (152s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene6", { filter: "blur(8px)", scale: 1.02, opacity: 0, duration: 0.4, ease: "power2.inOut" }, 151.6);
+    tl.set("#el-scene7", { opacity: 1 }, 152);
+    tl.set("#el-scene6", { visibility: "hidden" }, 152);
+
+    /* ════════════════════════════════════════════
+       FINAL FADE (169.5-171s)
+       ════════════════════════════════════════════ */
+    tl.to("#el-scene7", { opacity: 0, duration: 1.5, ease: "power2.in" }, 169.5);
+    tl.set("#el-scene7", { visibility: "hidden" }, 171);
+
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

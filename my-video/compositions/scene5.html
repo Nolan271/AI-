@@ -1,0 +1,54 @@
+<template id="scene5-template">
+  <div data-composition-id="scene5" data-width="1920" data-height="1080">
+    <div class="vignette"></div>
+    <div class="glow-center" style="background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 65%);"></div>
+    <div class="ghost-text gold-gradient" style="font-size:120px;bottom:-30px;left:0;" data-layout-allow-overflow>福利保障</div>
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+    <div class="bottom-bar"></div>
+
+    <div class="scene-content">
+      <div class="label-gold" id="s5-label">人事与福利</div>
+      <div class="accent-line" id="s5-accent"></div>
+      <div class="headline-serif small" id="s5-title" style="font-size:46px;">试用转正 · 薪酬福利 · 请休假</div>
+      <div class="rule-grid" id="s5-rules" style="margin-top:16px;">
+        <div class="rule-card" style="min-width:200px;">
+          <div class="title">试用期</div>
+          <div class="desc">3个月试用期<br/>考核80分以上转正</div>
+        </div>
+        <div class="rule-card" style="min-width:200px; border-left-color:#4a8bc2;">
+          <div class="title" style="color:#4a8bc2;">薪酬发放</div>
+          <div class="desc">每月15日 · 银行转账<br/>绩效工资月度考核</div>
+        </div>
+        <div class="rule-card" style="min-width:200px;">
+          <div class="title">年假</div>
+          <div class="desc">满1年享年假<br/>逐年递增 · 最长10天</div>
+        </div>
+      </div>
+      <div class="tag-list" id="s5-tags" style="margin-top:14px;">
+        <span class="tag-item gold">婚假7天</span>
+        <span class="tag-item">产假98天</span>
+        <span class="tag-item gold">陪产假7天</span>
+        <span class="tag-item">考试假2天/年</span>
+        <span class="tag-item gold">病假 · 事假</span>
+        <span class="tag-item">哺乳假</span>
+      </div>
+    </div>
+    <div class="logo-text">恒海实业集团</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      tl.from("#s5-label",  { y: 25, opacity: 0, duration: 0.4, ease: "power2.out" }, 0);
+      tl.from("#s5-accent", { scaleX: 0, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+      tl.from("#s5-title",  { y: 30, opacity: 0, duration: 0.6, ease: "expo.out" }, 0.6);
+      tl.from(".rule-card", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out", stagger: 0.1 }, 1.2);
+      tl.from("#s5-tags",   { y: 15, opacity: 0, duration: 0.4, ease: "power2.out", stagger: 0.05 }, 2.0);
+      tl.to(".glow-center", { scale: 1.06, opacity: 0.7, duration: 4, ease: "sine.inOut", yoyo: true, repeat: 1 }, 1);
+      window.__timelines["scene5"] = tl;
+    </script>
+  </div>
+</template>

@@ -27,3 +27,8 @@ agent-backend/output/
 # OS
 Thumbs.db
 .DS_Store
+
+# Unrelated user files (root level only)
+/员工手册*.docx
+/阳光甜美*
+/~$*
