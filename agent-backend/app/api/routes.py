@@ -14,7 +14,7 @@ from app.design_system.master import get_default_design_system, parse_master_md
 
 router = APIRouter(prefix="/api/v1", tags=["video"])
 
-# 内存中的项目状态（生产环境应用数据库）
+# 内存中的项目状态（生产环境应使用数据库）
 projects: dict[str, VideoProject] = {}
 pipeline = VideoPipeline()
 
@@ -78,7 +78,7 @@ async def list_projects():
 
 @router.post("/projects/{project_id}/rerender")
 async def rerender_project(project_id: str):
-    """重新渲染已生成的项目"""
+    """重新生成已生成的项目（仅重新运行 pipeline）"""
     if project_id not in projects:
         raise HTTPException(status_code=404, detail="Project not found")
 
@@ -86,16 +86,10 @@ async def rerender_project(project_id: str):
     project.status = "generating"
 
     try:
-        from app.core.render_service import RenderService
-        render_svc = RenderService()
-        result = await render_svc.trigger_render()
-
-        project.status = "rendered" if result["success"] else "failed"
-        project.output_path = result.get("video_path")
-
-        if result.get("video_path"):
-            render_svc.copy_to_output(result["video_path"])
-
+        new_project = await pipeline.run(request=project.request)
+        project.script = new_project.script
+        project.scenes = new_project.scenes
+        project.status = "generated"
         return project.model_dump()
     except Exception as e:
         project.status = "failed"

@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     # ChromaDB
     chroma_persist_dir: str = "./chroma_db"
 
-    # HyperFrames
-    hyperframes_project_path: str = "../my-video"
-
     # Server
     host: str = "0.0.0.0"
     port: int = 8000
@@ -29,10 +26,6 @@ class Settings(BaseSettings):
     output_dir: str = "./output"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
-
-    @property
-    def hyperframes_abs_path(self) -> Path:
-        return Path(self.hyperframes_project_path).resolve()
 
     @property
     def upload_abs_path(self) -> Path:

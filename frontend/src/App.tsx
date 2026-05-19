@@ -1,5 +1,5 @@
 import { useState, useRef, FormEvent } from 'react'
-import { FileText, Upload, Play, ExternalLink, Loader } from 'lucide-react'
+import { FileText, Upload, Play, Loader } from 'lucide-react'
 
 const API_BASE = '/api/v1'
 
@@ -16,13 +16,13 @@ interface Project {
   script: string
   scenes: Array<{
     index: number
+    start_time: number
     title: string
     duration: number
     narration_text: string
     visual_style: string
   }>
   status: string
-  output_path: string | null
 }
 
 function App() {
@@ -213,25 +213,11 @@ function App() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 600 }}>生成结果</h2>
               <span className={`status-badge ${project.status}`}>
-                {project.status === 'rendered' ? '渲染完成' :
+                {project.status === 'generated' ? '生成完成' :
                  project.status === 'generating' ? '生成中' :
                  project.status === 'failed' ? '失败' : '待处理'}
               </span>
             </div>
-
-            {project.output_path && (
-              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: 12, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Play size={16} color="#16a34a" />
-                <span style={{ fontSize: 14 }}>视频已生成</span>
-                <a
-                  href={`http://localhost:8000/output/${project.output_path?.split('/').pop() || project.output_path?.split('\\').pop()}`}
-                  target="_blank"
-                  style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, color: '#16a34a', fontSize: 13 }}
-                >
-                  查看视频 <ExternalLink size={12} />
-                </a>
-              </div>
-            )}
 
             <div style={{ marginBottom: 12 }}>
               <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>解说脚本</h3>

@@ -9,12 +9,6 @@ agent-backend/.env
 # Node
 node_modules/
 
-# HyperFrames renders
-my-video/renders/work/
-my-video/renders/work-*/
-my-video/renders/*.mp4
-my-video/renders/output/
-
 # Uploads / Output
 agent-backend/uploads/
 agent-backend/output/
@@ -33,4 +27,3 @@ Thumbs.db
 /员工手册*.docx
 /阳光甜美*
 /~$*
-my-video/assets/reference-audio/

@@ -233,7 +233,7 @@ input, textarea, select {
 
 .status-badge.pending { background: #f1f5f9; color: #64748b; }
 .status-badge.generating { background: #fef3c7; color: #d97706; }
-.status-badge.rendered { background: #dcfce7; color: #16a34a; }
+.status-badge.generated { background: #dcfce7; color: #16a34a; }
 .status-badge.failed { background: #fee2e2; color: #dc2626; }
 
 .loading-spinner {

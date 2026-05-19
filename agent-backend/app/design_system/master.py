@@ -5,9 +5,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 import re
 
-from app.config import settings
-
-
 @dataclass
 class ColorPalette:
     primary: str = "#64748B"
@@ -115,6 +112,6 @@ def parse_master_md(path: Path) -> DesignSystem:
 
 
 def get_default_design_system() -> DesignSystem:
-    """获取默认设计系统（从 my-video/design-system/MASTER.md 读取）"""
-    default_path = Path(settings.hyperframes_project_path) / "design-system" / "MASTER.md"
+    """获取默认设计系统（从本地 MASTER.md 读取）"""
+    default_path = Path(__file__).parent / "MASTER.md"
     return parse_master_md(default_path)
