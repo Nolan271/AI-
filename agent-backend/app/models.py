@@ -32,5 +32,5 @@ class VideoProject(BaseModel):
     request: ProjectRequest
     script: str
     scenes: list[ScenePlan]
-    status: str = "pending"  # pending | generating | rendered | failed
-    output_path: Optional[str] = None
+    status: str = "pending"  # pending | generating | generated | failed
+    audio_path: Optional[str] = None  # TTS 合成音频路径

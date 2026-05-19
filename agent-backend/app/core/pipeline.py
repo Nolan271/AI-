@@ -13,6 +13,7 @@ from app.core.document_processor import extract_text
 from app.core.rag_service import rag_service
 from app.core.script_agent import ScriptAgent
 from app.core.scene_planner import ScenePlanner
+from app.core.tts_service import VolcTTSService
 from app.design_system.master import DesignSystem, parse_master_md, get_default_design_system
 
 
@@ -22,6 +23,7 @@ class VideoPipeline:
     def __init__(self):
         self.script_agent = ScriptAgent()
         self.scene_planner = ScenePlanner()
+        self.tts_service = VolcTTSService()
 
     async def run(
         self,
@@ -29,8 +31,9 @@ class VideoPipeline:
         document_paths: Optional[list[Path]] = None,
         design_system: Optional[DesignSystem] = None,
         tts_audio_path: Optional[Path] = None,
+        generate_tts: bool = True,
     ) -> VideoProject:
-        """执行完整的文档→视频流水线"""
+        """执行完整的文档→视频流水线（含 TTS 语音合成）"""
         project_id = str(uuid.uuid4())[:8]
 
         # === Step 1: 文档摄入 + RAG 索引 ===
@@ -40,7 +43,6 @@ class VideoPipeline:
             for doc_path in document_paths:
                 text = extract_text(doc_path)
                 all_texts.append(text)
-                # 写入向量库
                 rag_service.index_document(text, source=doc_path.name)
 
             doc_context = "\n\n=====\n\n".join(all_texts)
@@ -62,13 +64,27 @@ class VideoPipeline:
             design_system=design_system,
         )
 
-        # === Step 5: 构建返回结果 ===
+        # === Step 5: TTS 语音合成（使用火山引擎 API）===
+        audio_path = None
+        if generate_tts and script.strip():
+            try:
+                audio_dir = settings.output_abs_path / "audio"
+                audio_dir.mkdir(parents=True, exist_ok=True)
+                tts_path = audio_dir / f"{project_id}_narration.mp3"
+                await self.tts_service.synthesize(script, tts_path)
+                audio_path = str(tts_path)
+            except Exception as e:
+                # TTS 失败不阻塞整体流程
+                print(f"[TTS Warning] Speech synthesis failed: {e}")
+
+        # === Step 6: 构建返回结果 ===
         project = VideoProject(
             id=project_id,
             request=request,
             script=script,
             scenes=scenes,
             status="generated",
+            audio_path=audio_path,
         )
 
         return project

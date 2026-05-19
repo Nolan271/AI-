@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     # HeyGen
     heygen_api_key: str = ""
 
+    # Volcengine TTS (火山引擎语音合成)
+    volc_tts_api_key: str = ""
+    volc_tts_voice_type: str = "BV056_streaming"
+
     # Embedding
     embedding_model: str = "text-embedding-3-small"
 

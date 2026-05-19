@@ -4,12 +4,13 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
-from app.models import ProjectRequest, VideoProject
+from app.models import ProjectRequest, VideoProject, ScenePlan
 from app.core.pipeline import VideoPipeline
 from app.core.document_processor import extract_text
 from app.core.rag_service import rag_service
+from app.core.tts_service import VolcTTSService
 from app.design_system.master import get_default_design_system, parse_master_md
 
 router = APIRouter(prefix="/api/v1", tags=["video"])
@@ -116,3 +117,56 @@ async def get_design_system():
         "style_name": ds.style_name,
         "style_keywords": ds.style_keywords,
     }
+
+
+@router.get("/tts/voices")
+async def list_tts_voices():
+    """获取可用的火山引擎 TTS 音色列表"""
+    from app.core.tts_service import VOLC_VOICES
+    return VOLC_VOICES
+
+
+@router.post("/tts/synthesize")
+async def synthesize_speech(
+    text: str = Form(...),
+    voice_type: str = Form("BV056_streaming"),
+):
+    """将文本合成为语音（火山引擎 TTS），返回音频文件"""
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="Text is required")
+
+    try:
+        svc = VolcTTSService(voice_type=voice_type)
+        audio_dir = Path("./output/tts")
+        audio_dir.mkdir(parents=True, exist_ok=True)
+        file_name = f"{uuid.uuid4().hex}_tts.mp3"
+        audio_path = audio_dir / file_name
+        await svc.synthesize(text, audio_path)
+        return FileResponse(
+            path=str(audio_path),
+            media_type="audio/mpeg",
+            filename=file_name,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/projects/{project_id}/audio")
+async def get_project_audio(project_id: str):
+    """获取项目的 TTS 合成音频"""
+    if project_id not in projects:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    project = projects[project_id]
+    if not project.audio_path:
+        raise HTTPException(status_code=404, detail="No audio generated for this project")
+
+    audio_path = Path(project.audio_path)
+    if not audio_path.exists():
+        raise HTTPException(status_code=404, detail="Audio file not found on disk")
+
+    return FileResponse(
+        path=str(audio_path),
+        media_type="audio/mpeg",
+        filename=f"{project_id}_narration.mp3",
+    )
