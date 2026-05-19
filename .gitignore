@@ -28,3 +28,7 @@ Thumbs.db
 /阳光甜美*
 /~$*
 /语言大模型API文档.md
+
+# Build artifacts
+/ffmpeg-bin/
+*.log

@@ -3,20 +3,14 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    # LLM
+    # LLM (DeepSeek, OpenAI-compatible)
     openai_api_key: str = ""
-    openai_base_url: str = "https://api.openai.com/v1"
-    llm_model: str = "gpt-4o"
-
-    # HeyGen
-    heygen_api_key: str = ""
+    openai_base_url: str = "https://api.deepseek.com/v1"
+    llm_model: str = "deepseek-v4-flash"
 
     # Volcengine TTS (火山引擎语音合成)
     volc_tts_api_key: str = ""
-    volc_tts_voice_type: str = "BV056_streaming"
-
-    # Embedding
-    embedding_model: str = "text-embedding-3-small"
+    volc_tts_voice_type: str = "zh_female_vv_uranus_bigtts"
 
     # ChromaDB
     chroma_persist_dir: str = "./chroma_db"

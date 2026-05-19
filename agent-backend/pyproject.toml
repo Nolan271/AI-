@@ -20,6 +20,9 @@ dependencies = [
     "aiofiles>=24.1.0",
     "requests>=2.32.0",
     "httpx>=0.28.0",
+    "websockets>=14.0",
+    "sentence-transformers>=5.5.0",
+    "langchain-huggingface>=1.2.2",
 ]
 
 [project.scripts]

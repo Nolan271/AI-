@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 
 from app.config import settings
@@ -15,14 +15,12 @@ class RAGService:
     def __init__(self, collection_name: str = "video_docs"):
         self.collection_name = collection_name
         self._vector_store: Optional[Chroma] = None
-        self._embeddings: Optional[OpenAIEmbeddings] = None
+        self._embeddings: Optional[HuggingFaceEmbeddings] = None
 
-    def _get_embeddings(self) -> OpenAIEmbeddings:
+    def _get_embeddings(self) -> HuggingFaceEmbeddings:
         if self._embeddings is None:
-            self._embeddings = OpenAIEmbeddings(
-                model=settings.embedding_model,
-                openai_api_key=settings.openai_api_key,
-                openai_api_base=settings.openai_base_url,
+            self._embeddings = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2",
             )
         return self._embeddings
 

@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      margin: 0; width: 1920px; height: 1080px;
+      overflow: hidden; background: #0B1E36;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      color: #fff;
+    }
+    .scene-bg {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 120px;
+    }
+    .deco-circle {
+      position: absolute; border-radius: 50%;
+      opacity: 0.1; pointer-events: none;
+    }
+    .scene-title {
+      font-size: 64px; font-weight: 700;
+      letter-spacing: 4px; margin-bottom: 20px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .card {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      padding: 28px 36px;
+    }
+    .gold { color: #C9A84C; }
+    .gold-light { color: #E8C87A; }
+  </style>
+</head>
+<body>
+  <div
+    id="root"
+    data-composition-id="main"
+    data-start="0"
+    data-duration="144"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- Audio narration track -->
+    <div data-composition-id="narration" data-start="0" data-duration="144" data-width="1920" data-height="1080" data-clip>
+      <audio id="narration-audio" src="assets/narration.mp3" data-start="0" data-duration="144"></audio>
+    </div>
+
+    <!-- ============================
+         Scene 1: 欢迎加入恒海 (0-24.4s)
+    ============================ -->
+    <div id="scene1" class="clip" data-start="0" data-duration="24.4" data-track-index="1">
+      <div class="scene-bg" style="background: linear-gradient(135deg, #0B1E36 0%, #162D50 40%, #1A3A5C 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s1-logo" style="margin-bottom: 30px; opacity: 0;">
+          <div style="width: 100px; height: 100px; border: 3px solid #C9A84C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <span style="font-size: 36px; font-weight: 800; color: #C9A84C;">恒</span>
+          </div>
+        </div>
+
+        <div id="s1-title" style="opacity: 0;">
+          <div style="font-size: 72px; font-weight: 800; letter-spacing: 6px; margin-bottom: 10px;">恒海实业集团</div>
+          <div class="gold" style="font-size: 40px; font-weight: 600; letter-spacing: 8px; margin-bottom: 24px;">新员工入职指南</div>
+        </div>
+
+        <div id="s1-line" style="width: 0px; height: 3px; background: linear-gradient(90deg, transparent, #C9A84C, transparent); margin: 10px 0 20px;"></div>
+
+        <div id="s1-tag" style="opacity: 0; display: flex; gap: 30px; margin-top: 20px;">
+          <div class="card" style="padding: 14px 28px; font-size: 22px; letter-spacing: 2px;">⚡ 电力装备</div>
+          <div class="card" style="padding: 14px 28px; font-size: 22px; letter-spacing: 2px;">🏭 产业园运营</div>
+          <div class="card" style="padding: 14px 28px; font-size: 22px; letter-spacing: 2px;">🔬 科创投资</div>
+        </div>
+
+        <div id="s1-year" style="position: absolute; bottom: 60px; opacity: 0;">
+          <span style="font-size: 24px; letter-spacing: 4px; opacity: 0.6;">成立于 2009 · 国家级高新技术企业</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 2: 我们的文化与愿景 (24.4-48.8s)
+    ============================ -->
+    <div id="scene2" class="clip" data-start="24.4" data-duration="24.4" data-track-index="2">
+      <div class="scene-bg" style="background: linear-gradient(160deg, #0B1E36 0%, #1A2D4A 50%, #0F2A40 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s2-header" style="opacity: 0; margin-bottom: 30px;">
+          <div style="font-size: 28px; letter-spacing: 6px; opacity: 0.5;">企业文化</div>
+          <div style="font-size: 52px; font-weight: 700; letter-spacing: 4px;">共美好 · 创未来</div>
+        </div>
+
+        <div id="s2-items" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 80%; opacity: 0;">
+          <div class="card" style="grid-column: 1/2;">
+            <div class="gold" style="font-size: 20px; margin-bottom: 6px;">🎯 使命</div>
+            <div style="font-size: 20px; line-height: 1.6;">以科技创新驱动能源与产业发展<br>为客户创价值 · 为社会做贡献 · 为员工谋幸福</div>
+          </div>
+          <div class="card" style="grid-column: 2/3;">
+            <div class="gold" style="font-size: 20px; margin-bottom: 6px;">👁️ 愿景</div>
+            <div style="font-size: 22px; font-weight: 600;">成为百年百强国际化企业</div>
+          </div>
+          <div class="card" style="grid-column: 1/2;">
+            <div class="gold" style="font-size: 20px; margin-bottom: 6px;">⭐ 核心价值观</div>
+            <div style="font-size: 20px;">始于奋斗 · 成于诚信 · 持于创新</div>
+          </div>
+          <div class="card" style="grid-column: 2/3;">
+            <div class="gold" style="font-size: 20px; margin-bottom: 6px;">🤖 人才理念</div>
+            <div style="font-size: 20px;">AI赋能 · 碳硅基人才协同<br>敢想敢干敢担当</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 3: 员工行为规范 (48.8-70.8s)
+    ============================ -->
+    <div id="scene3" class="clip" data-start="48.8" data-duration="22" data-track-index="3">
+      <div class="scene-bg" style="background: linear-gradient(150deg, #0D1F34 0%, #1B3450 50%, #0B1E36 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s3-header" style="opacity: 0; margin-bottom: 30px;">
+          <div style="font-size: 48px; font-weight: 700; letter-spacing: 4px;">员工行为规范</div>
+          <div class="gold-light" style="font-size: 22px; margin-top: 8px; letter-spacing: 3px;">成为优秀的恒海人</div>
+        </div>
+
+        <div id="s3-cards" style="display: flex; gap: 24px; opacity: 0; width: 85%;">
+          <div class="card" style="flex: 1; text-align: center; padding: 24px;">
+            <div style="font-size: 40px; margin-bottom: 12px;">🤝</div>
+            <div class="gold" style="font-size: 20px; margin-bottom: 10px;">职业操守</div>
+            <div style="font-size: 18px; line-height: 2;">诚实守信<br>尊重他人<br>保护公司资产</div>
+          </div>
+          <div class="card" style="flex: 1; text-align: center; padding: 24px;">
+            <div style="font-size: 40px; margin-bottom: 12px;">💪</div>
+            <div class="gold" style="font-size: 20px; margin-bottom: 10px;">工作态度</div>
+            <div style="font-size: 18px; line-height: 2;">勤奋尽责<br>团队合作<br>持续学习</div>
+          </div>
+          <div class="card" style="flex: 1; text-align: center; padding: 24px;">
+            <div style="font-size: 40px; margin-bottom: 12px;">📋</div>
+            <div class="gold" style="font-size: 20px; margin-bottom: 10px;">7S 管理</div>
+            <div style="font-size: 18px; line-height: 2;">整理 · 整顿 · 清扫 · 清洁<br>素养 · 安全 · 节约</div>
+          </div>
+        </div>
+
+        <div id="s3-footer" style="margin-top: 30px; opacity: 0;">
+          <div style="padding: 14px 40px; border: 1px solid rgba(201,168,76,0.3); border-radius: 40px; display: inline-block; font-size: 18px; letter-spacing: 2px;">
+            ⚠️ 严格遵守「十不准」行为准则
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 4: 入职与转正流程 (70.8-91.5s)
+    ============================ -->
+    <div id="scene4" class="clip" data-start="70.8" data-duration="20.7" data-track-index="4">
+      <div class="scene-bg" style="background: linear-gradient(140deg, #0E2338 0%, #1B3A5A 60%, #0D1F34 100%);padding: 60px 60px;">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s4-header" style="opacity: 0; margin-bottom: 36px;">
+          <div style="font-size: 48px; font-weight: 700; letter-spacing: 4px;">入职与转正流程</div>
+          <div class="gold-light" style="font-size: 20px; margin-top: 8px;">快速融入 · 发挥才能</div>
+        </div>
+
+        <div id="s4-flow" style="display: flex; align-items: center; gap: 0; width: 92%; opacity: 0; margin-left: -40px;">
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #C9A84C; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 700; color: #0B1E36;">1</div>
+            <div class="card" style="padding: 10px 8px; font-size: 16px; border: none; background: rgba(255,255,255,0.05);">提交入职材料</div>
+          </div>
+          <div style="font-size: 20px; color: #C9A84C; opacity: 0.6;">→</div>
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #C9A84C; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 700; color: #0B1E36;">2</div>
+            <div class="card" style="padding: 10px 8px; font-size: 16px; border: none; background: rgba(255,255,255,0.05);">7天试岗期</div>
+          </div>
+          <div style="font-size: 20px; color: #C9A84C; opacity: 0.6;">→</div>
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #C9A84C; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 700; color: #0B1E36;">3</div>
+            <div class="card" style="padding: 10px 8px; font-size: 16px; border: none; background: rgba(255,255,255,0.05);">3个月试用期</div>
+          </div>
+          <div style="font-size: 20px; color: #C9A84C; opacity: 0.6;">→</div>
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #C9A84C; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 20px; font-weight: 700; color: #0B1E36;">4</div>
+            <div class="card" style="padding: 10px 8px; font-size: 16px; border: none; background: rgba(255,255,255,0.05);">转正考核≥80分</div>
+          </div>
+        </div>
+
+        <div id="s4-note" style="margin-top: 20px; opacity: 0;">
+          <div style="padding: 12px 24px; background: rgba(201,168,76,0.10); border-radius: 12px; display: inline-block; font-size: 17px;">
+            📋 完成《试用期目标责任书》· 综合评分 80 分以上按时转正
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 5: 考勤与请假须知 (91.5-113.9s)
+    ============================ -->
+    <div id="scene5" class="clip" data-start="91.5" data-duration="22.4" data-track-index="5">
+      <div class="scene-bg" style="background: linear-gradient(155deg, #0B1E36 0%, #1A3450 50%, #0D1F30 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s5-header" style="opacity: 0; margin-bottom: 30px;">
+          <div style="font-size: 48px; font-weight: 700; letter-spacing: 4px;">考勤与请假须知</div>
+        </div>
+
+        <div id="s5-worktime" style="opacity: 0; margin-bottom: 24px;">
+          <div class="card" style="display: flex; align-items: center; gap: 30px; padding: 18px 36px;">
+            <span style="font-size: 40px;">⏰</span>
+            <div>
+              <div class="gold" style="font-size: 20px; margin-bottom: 4px;">工作时间</div>
+              <div style="font-size: 24px; font-weight: 600;">周一至周六 · 09:00 - 12:00 | 13:30 - 18:00</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s5-leave" style="opacity: 0; width: 85%;">
+          <div style="font-size: 20px; margin-bottom: 16px; letter-spacing: 2px;">📌 请假类型</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">🤒 病假</div>
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">📝 事假</div>
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">💍 婚假</div>
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">🕊️ 丧假</div>
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">🌴 年假（最长10天）</div>
+            <div class="card" style="padding: 10px 20px; font-size: 18px;">👶 产假 / 陪产假</div>
+          </div>
+        </div>
+
+        <div id="s5-tip" style="position: absolute; bottom: 50px; opacity: 0;">
+          <div style="padding: 10px 30px; border-left: 3px solid #C9A84C; background: rgba(201,168,76,0.05); font-size: 18px;">
+            💡 每月迟到超过 3 次会影响绩效 · 外出需提前在钉钉申请
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 6: 绩效管理简介 (113.9-129.4s)
+    ============================ -->
+    <div id="scene6" class="clip" data-start="113.9" data-duration="15.5" data-track-index="6">
+      <div class="scene-bg" style="background: linear-gradient(145deg, #0E2338 0%, #1B3A5A 50%, #0D1F34 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s6-header" style="opacity: 0; margin-bottom: 30px;">
+          <div style="font-size: 48px; font-weight: 700; letter-spacing: 4px;">绩效管理</div>
+          <div class="gold-light" style="font-size: 22px; margin-top: 8px;">公正客观 · 结果导向 · 持续赋能</div>
+        </div>
+
+        <div id="s6-cycle" style="display: flex; align-items: center; gap: 0; width: 80%; opacity: 0;">
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #E8C87A); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 32px;">🎯</div>
+            <div style="font-size: 18px;">目标设定</div>
+          </div>
+          <div style="font-size: 24px; color: #C9A84C;">→</div>
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #E8C87A); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 32px;">⚡</div>
+            <div style="font-size: 18px;">执行推进</div>
+          </div>
+          <div style="font-size: 24px; color: #C9A84C;">→</div>
+          <div style="flex: 1; text-align: center;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #C9A84C, #E8C87A); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 32px;">📊</div>
+            <div style="font-size: 18px;">评估反馈</div>
+          </div>
+        </div>
+
+        <div id="s6-motto" style="margin-top: 30px; opacity: 0;">
+          <div class="card" style="padding: 16px 36px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);">
+            <span style="font-size: 24px;">「只要努力，绩效就会有回报」</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         Scene 7: 携手共创未来 (129.4-144.4s)
+    ============================ -->
+    <div id="scene7" class="clip" data-start="129.4" data-duration="15" data-track-index="7">
+      <div class="scene-bg" style="background: linear-gradient(135deg, #0B1E36 0%, #162D50 40%, #1A3A5C 100%);">
+        <div class="deco-circle" style="width: 600px; height: 600px; top: -150px; right: -100px; background: radial-gradient(circle, #C9A84C, transparent 70%);"></div>
+
+
+        <div id="s7-content" style="text-align: center; opacity: 0;">
+          <div style="width: 120px; height: 120px; border: 3px solid #C9A84C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;">
+            <span style="font-size: 48px; font-weight: 800; color: #C9A84C;">恒</span>
+          </div>
+          <div style="font-size: 60px; font-weight: 800; letter-spacing: 6px;">共美好 · 创未来</div>
+          <div style="width: 200px; height: 3px; background: linear-gradient(90deg, transparent, #C9A84C, transparent); margin: 24px auto;"></div>
+          <div style="font-size: 28px; letter-spacing: 4px; opacity: 0.8; line-height: 1.8;">
+            期待与你一起<br>书写恒海更加辉煌的明天
+          </div>
+        </div>
+
+        <div id="s7-footer" style="position: absolute; bottom: 50px; opacity: 0;">
+          <span style="font-size: 20px; letter-spacing: 6px; opacity: 0.4;">恒海实业集团 · HENGHAI GROUP</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    // Narration audio timeline
+    const audioTl = gsap.timeline({ paused: true });
+    window.__timelines["narration"] = audioTl;
+
+    // Main Timeline
+    const tl = gsap.timeline({ paused: true });
+
+    // Scene 1: 欢迎加入恒海 (0-24.4s)
+    tl.fromTo("#s1-logo", {"opacity": 0, "scale": 0.5}, {"opacity": 1, "scale": 1, "duration": 1.2, "ease": "back.out(1.5)"}, 0.5);
+    tl.fromTo("#s1-title", {"opacity": 0, "y": 40}, {"opacity": 1, "y": 0, "duration": 1, "ease": "power3.out"}, 1.5);
+    tl.fromTo("#s1-line", {"width": "0px"}, {"width": "300px", "duration": 0.8, "ease": "power2.out"}, 2.5);
+    tl.fromTo("#s1-tag", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 0.8, "ease": "power3.out"}, 3.2);
+    tl.fromTo("#s1-year", {"opacity": 0}, {"opacity": 1, "duration": 0.6}, 4);
+
+    // Scene 2: 我们的文化与愿景 (24.4-48.8s)
+    tl.fromTo("#s2-header", {"opacity": 0, "y": -30}, {"opacity": 1, "y": 0, "duration": 0.8}, 24.9);
+    tl.fromTo("#s2-items", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 0.8}, 25.9);
+
+    // Scene 3: 员工行为规范 (48.8-70.8s)
+    tl.fromTo("#s3-header", {"opacity": 0, "y": -30}, {"opacity": 1, "y": 0, "duration": 0.8}, 49.3);
+    tl.fromTo("#s3-cards", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 0.8}, 50.3);
+    tl.fromTo("#s3-footer", {"opacity": 0, "y": 20}, {"opacity": 1, "y": 0, "duration": 0.6}, 51.8);
+
+    // Scene 4: 入职与转正流程 (70.8-91.5s)
+    tl.fromTo("#s4-header", {"opacity": 0, "y": -30}, {"opacity": 1, "y": 0, "duration": 0.8}, 71.3);
+    tl.fromTo("#s4-flow", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 0.8}, 72.3);
+    tl.fromTo("#s4-note", {"opacity": 0, "y": 20}, {"opacity": 1, "y": 0, "duration": 0.6}, 73.8);
+
+    // Scene 5: 考勤与请假须知 (91.5-113.9s)
+    tl.fromTo("#s5-header", {"opacity": 0, "y": -30}, {"opacity": 1, "y": 0, "duration": 0.8}, 92);
+    tl.fromTo("#s5-worktime", {"opacity": 0, "x": -40}, {"opacity": 1, "x": 0, "duration": 0.8}, 93);
+    tl.fromTo("#s5-leave", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 0.8}, 94);
+    tl.fromTo("#s5-tip", {"opacity": 0, "y": 20}, {"opacity": 1, "y": 0, "duration": 0.6}, 96);
+
+    // Scene 6: 绩效管理简介 (113.9-129.4s)
+    tl.fromTo("#s6-header", {"opacity": 0, "y": -30}, {"opacity": 1, "y": 0, "duration": 0.8}, 114.4);
+    tl.fromTo("#s6-cycle", {"opacity": 0, "scale": 0.9}, {"opacity": 1, "scale": 1, "duration": 0.8}, 115.4);
+    tl.fromTo("#s6-motto", {"opacity": 0, "y": 20}, {"opacity": 1, "y": 0, "duration": 0.6}, 116.9);
+
+    // Scene 7: 携手共创未来 (129.4-144.4s)
+    tl.fromTo("#s7-content", {"opacity": 0, "y": 30}, {"opacity": 1, "y": 0, "duration": 1.2, "ease": "power3.out"}, 129.9);
+    tl.fromTo("#s7-footer", {"opacity": 0}, {"opacity": 1, "duration": 0.8}, 132.4);
+
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>
