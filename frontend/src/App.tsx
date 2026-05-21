@@ -28,9 +28,7 @@ interface Project {
 function App() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [styleKeywords, setStyleKeywords] = useState('corporate, professional, clean')
-  const [sceneCount, setSceneCount] = useState(7)
-  const [duration, setDuration] = useState(173)
+  const [polishing, setPolishing] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [project, setProject] = useState<Project | null>(null)
@@ -54,6 +52,25 @@ function App() {
     }
   }
 
+  const handlePolish = async () => {
+    if (!description.trim()) return
+    setPolishing(true)
+    try {
+      const res = await fetch(`${API_BASE}/polish-description`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: description }),
+      })
+      if (!res.ok) throw new Error('润色失败')
+      const data = await res.json()
+      setDescription(data.polished)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setPolishing(false)
+    }
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
@@ -66,9 +83,6 @@ function App() {
       const formData = new FormData()
       formData.append('title', title)
       formData.append('description', description)
-      formData.append('style_keywords', styleKeywords)
-      formData.append('scene_count', String(sceneCount))
-      formData.append('total_duration_seconds', String(duration))
       formData.append('narration_language', 'zh-CN')
       formData.append('voice_type', voiceType)
 
@@ -123,44 +137,23 @@ function App() {
 
           <div className="form-group">
             <label>需求描述</label>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="描述视频的目的、风格、受众..."
-              rows={3}
-            />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <div className="form-group">
-              <label>风格关键词</label>
-              <input
-                value={styleKeywords}
-                onChange={e => setStyleKeywords(e.target.value)}
-                placeholder="corporate, professional, clean"
+            <div style={{ position: 'relative' }}>
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="描述视频的目的、风格、受众..."
+                rows={4}
               />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                disabled={polishing || !description.trim()}
+                onClick={handlePolish}
+                style={{ position: 'absolute', bottom: 8, right: 8, padding: '4px 12px', fontSize: 12 }}
+              >
+                {polishing ? '润色中...' : 'AI 润色'}
+              </button>
             </div>
-            <div className="form-group">
-              <label>场景数量</label>
-              <input
-                type="number"
-                value={sceneCount}
-                onChange={e => setSceneCount(Number(e.target.value))}
-                min={1}
-                max={20}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>总时长（秒）</label>
-            <input
-              type="number"
-              value={duration}
-              onChange={e => setDuration(Number(e.target.value))}
-              min={10}
-              max={600}
-            />
           </div>
 
           <div className="form-group">

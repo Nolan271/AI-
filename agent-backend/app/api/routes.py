@@ -4,8 +4,13 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from pydantic import BaseModel
 from fastapi.responses import JSONResponse, FileResponse
 
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+
+from app.config import settings
 from app.models import ProjectRequest, VideoProject, ScenePlan
 from app.core.pipeline import VideoPipeline
 from app.core.document_processor import extract_text
@@ -131,6 +136,30 @@ async def list_tts_voices():
             for name in names
         ]
     return grouped
+
+
+class PolishRequest(BaseModel):
+    text: str
+
+
+@router.post("/polish-description")
+async def polish_description(req: PolishRequest):
+    """用 AI 将用户的需求描述润色得更专业、完整、系统"""
+    if not req.text.strip():
+        raise HTTPException(status_code=400, detail="Text is required")
+
+    llm = ChatOpenAI(
+        model=settings.llm_model,
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_base_url,
+        temperature=0.3,
+    )
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "你是一个专业的视频策划顾问。将用户的需求描述润色得更加专业、完整、系统。保持原意，用简洁有力的语言重新组织，输出一段连贯的文字，不要列点，不要添加原需求中没有的内容。"),
+        ("human", "{text}"),
+    ])
+    result = await llm.ainvoke(prompt.format_messages(text=req.text))
+    return {"polished": result.content.strip()}
 
 
 @router.post("/tts/synthesize")
