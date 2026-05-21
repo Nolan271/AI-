@@ -64,14 +64,15 @@ class VideoPipeline:
             design_system=design_system,
         )
 
-        # === Step 5: TTS 语音合成（使用火山引擎 API）===
+        # === Step 5: TTS 语音合成（使用火山引擎 API，选用指定音色）===
         audio_path = None
         if generate_tts and script.strip():
             try:
                 audio_dir = settings.output_abs_path / "audio"
                 audio_dir.mkdir(parents=True, exist_ok=True)
                 tts_path = audio_dir / f"{project_id}_narration.mp3"
-                await self.tts_service.synthesize(script, tts_path)
+                tts = VolcTTSService(voice_type=request.voice_type)
+                await tts.synthesize(script, tts_path)
                 audio_path = str(tts_path)
             except Exception as e:
                 # TTS 失败不阻塞整体流程
