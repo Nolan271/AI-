@@ -14,6 +14,8 @@ class ProjectRequest(BaseModel):
 
     design_system_path: Optional[str] = None  # 用户可自定义设计系统
 
+    voice_type: str = "zh_female_vv_jupiter_bigtts"  # TTS 音色
+
 
 class ScenePlan(BaseModel):
     """AI 生成的场景规划"""
