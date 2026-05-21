@@ -10,7 +10,7 @@ from app.models import ProjectRequest, VideoProject, ScenePlan
 from app.core.pipeline import VideoPipeline
 from app.core.document_processor import extract_text
 from app.core.rag_service import rag_service
-from app.core.tts_service import VolcTTSService
+from app.core.tts_service import VolcTTSService, VOLC_VOICES, VOICE_CATEGORIES
 from app.design_system.master import get_default_design_system, parse_master_md
 
 router = APIRouter(prefix="/api/v1", tags=["video"])
@@ -28,6 +28,7 @@ async def create_project(
     scene_count: int = Form(7),
     total_duration_seconds: int = Form(173),
     narration_language: str = Form("zh-CN"),
+    voice_type: str = Form("zh_female_vv_jupiter_bigtts"),
     files: list[UploadFile] = File(default=None),
 ):
     """创建视频项目：上传文档 → AI 分析 → 生成视频"""
@@ -38,6 +39,7 @@ async def create_project(
         scene_count=scene_count,
         total_duration_seconds=total_duration_seconds,
         narration_language=narration_language,
+        voice_type=voice_type,
     )
 
     # 保存上传文件
@@ -121,9 +123,14 @@ async def get_design_system():
 
 @router.get("/tts/voices")
 async def list_tts_voices():
-    """获取可用的火山引擎 TTS 音色列表"""
-    from app.core.tts_service import VOLC_VOICES
-    return VOLC_VOICES
+    """获取分组音色列表（供前端选择器使用）"""
+    grouped = {}
+    for category, names in VOICE_CATEGORIES.items():
+        grouped[category] = [
+            {"name": name, "id": VOLC_VOICES[name]}
+            for name in names
+        ]
+    return grouped
 
 
 @router.post("/tts/synthesize")
