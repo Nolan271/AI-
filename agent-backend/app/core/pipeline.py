@@ -10,7 +10,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from app.config import settings
 from app.models import ProjectRequest, VideoProject
 from app.core.document_processor import extract_text
-from app.core.rag_service import rag_service
 from app.core.script_agent import ScriptAgent
 from app.core.scene_planner import ScenePlanner
 from app.core.tts_service import VolcTTSService
@@ -36,15 +35,13 @@ class VideoPipeline:
         """执行完整的文档→视频流水线（含 TTS 语音合成）"""
         project_id = str(uuid.uuid4())[:8]
 
-        # === Step 1: 文档摄入 + RAG 索引 ===
+        # === Step 1: 文档提取 ===
         doc_context = ""
         if document_paths:
             all_texts = []
             for doc_path in document_paths:
                 text = extract_text(doc_path)
                 all_texts.append(text)
-                rag_service.index_document(text, source=doc_path.name)
-
             doc_context = "\n\n=====\n\n".join(all_texts)
 
         # === Step 2: 使用默认或自定义设计系统 ===

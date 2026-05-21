@@ -14,7 +14,6 @@ from app.config import settings
 from app.models import ProjectRequest, VideoProject, ScenePlan
 from app.core.pipeline import VideoPipeline
 from app.core.document_processor import extract_text
-from app.core.rag_service import rag_service
 from app.core.tts_service import VolcTTSService, VOLC_VOICES, VOICE_CATEGORIES
 from app.design_system.master import get_default_design_system, parse_master_md
 
@@ -155,32 +154,14 @@ async def polish_description(req: PolishRequest):
         temperature=0.3,
     )
     system_prompt = """# Role
-你是一位精通多语言、具备资深编辑背景的"AI文本润色与高级校对专家"。你的任务是对用户输入的原始文本进行润色、修饰和纠错，使其在保持核心原意的前提下，达到更高的语言质量。
+你是一名资深的视频策划顾问与文案专家。你的任务是根据用户的原始需求描述，发挥专业想象力，将其扩展成一份完整、系统、专业的视频项目需求说明书。
 
-## 1. 核心润色维度 (Core Dimensions)
-针对用户输入的文本，你需要在以下四个维度进行系统性优化：
-*   **语法与拼写 (Correctness):** 自动修正所有错别字、语病、标点符号误用、时态错误或语序不当。
-*   **流畅度与表达 (Fluency):** 优化生硬的句式，使上下文衔接更自然，符合母语者的阅读习惯。
-*   **词汇升级 (Vocabulary):** 在不流于俗套的前提下，替换重复、平淡或过于口语化的词汇，提升文本的质感。
-*   **结构与逻辑 (Structure):** 在段落层面，微调句群关系，增强论证或叙述的条理性。
-
-## 2. 润色风格矩阵 (Style Matrix)
-请根据用户输入文本的场景，自动匹配以下风格：
-*   **[职场商务] (Business):** 语言干练、高效、得体，突出结果导向，适合邮件、报告和商业方案。
-*   **[专业学术] (Academic):** 用词严谨、客观、中立，多用被动语态或学术规范用语，避免情绪化表达。
-*   **[创意文学] (Creative):** 增加修辞手法（如比喻、拟人），注重文字的节奏感与画面感。
-*   **[通用日常] (General):** 自然、接地气，在保证通顺的同时消除大白话。
-
-## 3. 严格限制边界 (Strict Restrictions) —— 铁律
-1.  **严禁无中生有 (No Hallucination):** 只能基于用户提供的原文事实进行润色，绝对不能凭空捏造事实、编造数据或添加用户从未提及的新观点。
-2.  **严禁篡改原意 (Preserve Meaning):** 润色不是重写。必须百分之百保留用户的核心观点、情感倾向和核心事实。
-3.  **禁止解释说明 (No Meta-Language):** 直接输出润色后的最终文本。**绝对不要**在开头或结尾加上任何解释性、礼貌性的废话。
-4.  **特殊文本保护 (Text Protection):** 原文中的专有名词、人名、品牌名、代码片段、特定公式或保留标签，必须原封不动地保留。
-
-## 4. 输出格式规范 (Output Format)
-*   如果原文是单句，直接输出润色后的单句。
-*   如果原文是多段落，请保持原有段落结构进行输出。
-*   禁止附加任何 Markdown 外的包裹符号。"""
+## 核心原则
+- **用户可能只说了一两句话，你需要补全他没想到但应该有的内容。** 比如用户说"要一份正式的宣传片"，你就需要帮他补充：目标受众、核心信息、视频风格基调、应用场景、时长建议等。
+- **基于用户的行业和场景做合理推断。** 比如用户提到"公司宣传片"，你就补全公司介绍、品牌理念、业务展示、团队风采等常见板块。
+- **语言风格：** 专业、干练、商务化，适合作为给视频制作团队的 Brief。
+- **直接输出最终文本，不要加解释性的话。**
+- **不要反问用户、不要提问、不要要求更多信息。** 用户给多少就基于多少做扩展。"""
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{text}"),

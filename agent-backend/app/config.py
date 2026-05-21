@@ -12,9 +12,6 @@ class Settings(BaseSettings):
     volc_tts_api_key: str = ""
     volc_tts_voice_type: str = "zh_female_vv_uranus_bigtts"
 
-    # ChromaDB
-    chroma_persist_dir: str = "./chroma_db"
-
     # Server
     host: str = "0.0.0.0"
     port: int = 8000

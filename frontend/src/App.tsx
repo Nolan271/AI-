@@ -73,7 +73,14 @@ function App() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) return
+    if (!title.trim() || !description.trim()) {
+      setError('请填写项目标题和需求描述')
+      return
+    }
+    if (files.length === 0) {
+      setError('请上传至少一个文档素材')
+      return
+    }
 
     setLoading(true)
     setError('')
@@ -136,13 +143,14 @@ function App() {
           </div>
 
           <div className="form-group">
-            <label>需求描述</label>
+            <label>需求描述 *</label>
             <div style={{ position: 'relative' }}>
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 placeholder="描述视频的目的、风格、受众..."
                 rows={4}
+                required
               />
               <button
                 type="button"
@@ -184,7 +192,7 @@ function App() {
           </div>
 
           <div className="form-group">
-            <label>上传文档素材（Word / PDF / TXT）</label>
+            <label>上传文档素材 *（Word / PDF / TXT）</label>
             <div
               className={`file-upload ${files.length > 0 ? 'has-files' : ''}`}
               onClick={() => fileRef.current?.click()}
@@ -196,6 +204,7 @@ function App() {
                 accept=".docx,.pdf,.txt"
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
+                required
               />
               <Upload size={24} style={{ marginBottom: 8 }} />
               <div>
