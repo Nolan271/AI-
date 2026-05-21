@@ -36,6 +36,7 @@ function App() {
   const [error, setError] = useState('')
   const [voices, setVoices] = useState<Record<string, Array<{name: string, id: string}>>>({})
   const [voiceType, setVoiceType] = useState('zh_female_vv_jupiter_bigtts')
+  const [progressMsg, setProgressMsg] = useState('')
 
   useEffect(() => {
     fetch(`${API_BASE}/tts/voices`)
@@ -85,6 +86,7 @@ function App() {
     setLoading(true)
     setError('')
     setProject(null)
+    setProgressMsg('正在上传文档...')
 
     try {
       const formData = new FormData()
@@ -103,17 +105,44 @@ function App() {
       })
 
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || '创建项目失败')
+        const text = await res.text()
+        throw new Error(text || '创建项目失败')
       }
 
-      const data: Project = await res.json()
-      setProject(data)
-      setProjects(prev => [data, ...prev])
+      // 读取 SSE 流
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error('无法读取响应流')
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          try {
+            const event = JSON.parse(line.slice(6))
+            if (event.type === 'progress') {
+              setProgressMsg(event.message)
+            } else if (event.type === 'complete') {
+              setProject(event.project)
+              setProjects(prev => [event.project, ...prev])
+            } else if (event.type === 'error') {
+              throw new Error(event.message)
+            }
+          } catch { /* skip malformed events */ }
+        }
+      }
     } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
+      setProgressMsg('')
     }
   }
 
@@ -224,7 +253,7 @@ function App() {
             {loading ? (
               <>
                 <span className="loading-spinner" />
-                AI 正在生成视频...
+                {progressMsg || 'AI 正在生成视频...'}
               </>
             ) : (
               <>

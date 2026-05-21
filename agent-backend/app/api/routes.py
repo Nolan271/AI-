@@ -1,11 +1,13 @@
 """FastAPI API 路由"""
 
+import asyncio
+import json
 import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -35,7 +37,7 @@ async def create_project(
     voice_type: str = Form("zh_female_vv_jupiter_bigtts"),
     files: list[UploadFile] = File(default=None),
 ):
-    """创建视频项目：上传文档 → AI 分析 → 生成视频"""
+    """创建视频项目：上传文档 → AI 分析 → 生成视频（SSE 流式返回进度）"""
     request = ProjectRequest(
         title=title,
         description=description,
@@ -58,15 +60,42 @@ async def create_project(
             file_path.write_bytes(content)
             doc_paths.append(file_path)
 
-    try:
-        project = await pipeline.run(
-            request=request,
-            document_paths=doc_paths or None,
-        )
-        projects[project.id] = project
-        return project.model_dump()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    async def event_stream():
+        queue: asyncio.Queue[dict] = asyncio.Queue()
+
+        async def progress_callback(step: str, msg: str):
+            await queue.put({"step": step, "message": msg, "type": "progress"})
+
+        async def run_pipeline():
+            try:
+                project = await pipeline.run(
+                    request=request,
+                    document_paths=doc_paths or None,
+                    progress_callback=progress_callback,
+                )
+                projects[project.id] = project
+                await queue.put({
+                    "type": "complete",
+                    "step": "complete",
+                    "message": "生成完成",
+                    "project": project.model_dump(),
+                })
+            except Exception as e:
+                await queue.put({
+                    "type": "error",
+                    "step": "error",
+                    "message": str(e),
+                })
+
+        asyncio.create_task(run_pipeline())
+
+        while True:
+            event = await queue.get()
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+            if event["type"] in ("complete", "error"):
+                break
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 @router.get("/projects/{project_id}")

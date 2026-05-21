@@ -2,7 +2,7 @@
 
 import uuid
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Callable, Awaitable
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -31,11 +31,17 @@ class VideoPipeline:
         design_system: Optional[DesignSystem] = None,
         tts_audio_path: Optional[Path] = None,
         generate_tts: bool = True,
+        progress_callback: Optional[Callable[[str, str], Awaitable[None]]] = None,
     ) -> VideoProject:
         """执行完整的文档→视频流水线（含 TTS 语音合成）"""
         project_id = str(uuid.uuid4())[:8]
 
+        async def _progress(step: str, msg: str):
+            if progress_callback:
+                await progress_callback(step, msg)
+
         # === Step 1: 文档提取 ===
+        await _progress("extracting", "正在提取文档内容...")
         doc_context = ""
         if document_paths:
             all_texts = []
@@ -49,12 +55,14 @@ class VideoPipeline:
             design_system = get_default_design_system()
 
         # === Step 3: 生成脚本 ===
+        await _progress("script", "AI 正在生成解说脚本...（约需 30-60 秒）")
         script = await self.script_agent.generate(
             request=request,
             doc_context=doc_context,
         )
 
         # === Step 4: 场景规划 + 设计注入 ===
+        await _progress("scenes", "AI 正在规划视频场景...")
         scenes = await self.scene_planner.plan_scenes(
             script=script,
             request=request,
@@ -62,6 +70,7 @@ class VideoPipeline:
         )
 
         # === Step 5: TTS 语音合成（使用火山引擎 API，选用指定音色）===
+        await _progress("tts", "正在合成语音配音...")
         audio_path = None
         if generate_tts and script.strip():
             try:
