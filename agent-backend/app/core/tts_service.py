@@ -52,11 +52,48 @@ _DEFAULT_RESOURCE_ID = "seed-tts-2.0"
 # Voice types for 豆包语音合成大模型2.0 (seed-tts-2.0)
 # =========================================================================
 VOLC_VOICES = {
-    "Vivi 2.0": "zh_female_vv_uranus_bigtts",
-    "TVB女声 2.0": "zh_female_tvbnv_uranus_bigtts",
-    "甜美桃子 2.0": "zh_female_tianmeitaozi_mars_bigtts",
-    "爽朗少年 2.0": "zh_female_shuangkuaisisi_moon_bigtts",
-    "译制片男 2.0": "zh_male_yizhipiannan_uranus_bigtts",
+    # 专业沉稳
+    "云舟 — 沉稳清爽": "zh_male_yunzhou_jupiter_bigtts",
+    "James — 清晰解说": "zh_male_jieshuonansheng_mars_bigtts",
+    "小天 — 磁性亲和": "zh_male_xiaotian_jupiter_bigtts",
+    "Charlotte — 清冷御姐": "zh_female_gaolengyujie_moon_bigtts",
+    # 温暖亲和
+    "Mark — 温暖男声": "zh_male_wennuanahu_moon_bigtts",
+    "阳光青年 — 阳光积极": "zh_male_yangguangqingnian_moon_bigtts",
+    "Emma — 温柔淑女": "zh_female_wenroushunv_mars_bigtts",
+    "Sophia — 温暖贴心": "zh_female_tiexinnvsheng_mars_bigtts",
+    "Grace — 温柔知性": "zh_female_jitangmeimei_mars_bigtts",
+    "Olivia — 清晰通用": "zh_female_qingxinnvsheng_mars_bigtts",
+    # 活力生动
+    "Vivi — 专业活力": "zh_female_vv_jupiter_bigtts",
+    "Mia — 生动活泼": "zh_female_qiaopinvsheng_mars_bigtts",
+    "Lily — 清晰生动": "zh_female_linjia_mars_bigtts",
+    "Aria — 爽快利落": "zh_female_shuangkuaisisi_moon_bigtts",
+    "Ethan — 少年自信": "zh_male_shaonianzixin_moon_bigtts",
+}
+
+VOICE_CATEGORIES = {
+    "专业沉稳": [
+        "云舟 — 沉稳清爽",
+        "James — 清晰解说",
+        "小天 — 磁性亲和",
+        "Charlotte — 清冷御姐",
+    ],
+    "温暖亲和": [
+        "Mark — 温暖男声",
+        "阳光青年 — 阳光积极",
+        "Emma — 温柔淑女",
+        "Sophia — 温暖贴心",
+        "Grace — 温柔知性",
+        "Olivia — 清晰通用",
+    ],
+    "活力生动": [
+        "Vivi — 专业活力",
+        "Mia — 生动活泼",
+        "Lily — 清晰生动",
+        "Aria — 爽快利落",
+        "Ethan — 少年自信",
+    ],
 }
 
 
@@ -205,7 +242,7 @@ class VolcTTSService:
         self,
         api_key: Optional[str] = None,
         resource_id: str = _DEFAULT_RESOURCE_ID,
-        voice_type: str = "zh_female_vv_uranus_bigtts",
+        voice_type: str = "zh_female_vv_jupiter_bigtts",
         sample_rate: int = 24000,
         audio_format: str = "mp3",
         api_url: str = _DEFAULT_API_ENDPOINT,
