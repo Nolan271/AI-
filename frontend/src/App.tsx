@@ -1,4 +1,4 @@
-import { useState, useRef, FormEvent } from 'react'
+import { useState, useRef, FormEvent, useEffect } from 'react'
 import { FileText, Upload, Play, Loader } from 'lucide-react'
 
 const API_BASE = '/api/v1'
@@ -36,6 +36,16 @@ function App() {
   const [project, setProject] = useState<Project | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
   const [error, setError] = useState('')
+  const [voices, setVoices] = useState<Record<string, Array<{name: string, id: string}>>>({})
+  const [voiceType, setVoiceType] = useState('zh_female_vv_jupiter_bigtts')
+
+  useEffect(() => {
+    fetch(`${API_BASE}/tts/voices`)
+      .then(res => res.json())
+      .then(data => setVoices(data))
+      .catch(() => {})
+  }, [])
+
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +70,7 @@ function App() {
       formData.append('scene_count', String(sceneCount))
       formData.append('total_duration_seconds', String(duration))
       formData.append('narration_language', 'zh-CN')
+      formData.append('voice_type', voiceType)
 
       for (const file of files) {
         formData.append('files', file)
@@ -150,6 +161,33 @@ function App() {
               min={10}
               max={600}
             />
+          </div>
+
+          <div className="form-group">
+            <label>配音音色</label>
+            <select
+              value={voiceType}
+              onChange={e => setVoiceType(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 14,
+                background: 'white',
+                cursor: 'pointer',
+              }}
+            >
+              {Object.entries(voices).map(([category, items]) => (
+                <optgroup label={category} key={category}>
+                  {items.map(v => (
+                    <option key={v.id} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
