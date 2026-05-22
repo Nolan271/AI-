@@ -26,6 +26,8 @@ class ScenePlan(BaseModel):
     narration_text: str
     visual_style: str
     visual_keywords: list[str]
+    template_type: str = "content_card"
+    # template_type: title_card | content_card | bullet_points | image_text | conclusion
 
 
 class VideoProject(BaseModel):
@@ -34,5 +36,8 @@ class VideoProject(BaseModel):
     request: ProjectRequest
     script: str
     scenes: list[ScenePlan]
-    status: str = "pending"  # pending | generating | generated | failed
+    status: str = "pending"  # pending | generating | generated | html_generated | rendered | completed | failed
     audio_path: Optional[str] = None  # TTS 合成音频路径
+    audio_duration: Optional[float] = None  # 实际音频时长（秒）
+    video_path: Optional[str] = None  # 最终合成视频 MP4 路径
+    output_dir: Optional[str] = None  # 项目输出目录

@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     llm_model: str = "deepseek-v4-flash"
 
     # Volcengine TTS (火山引擎语音合成)
+    volc_app_id: str = ""
+    volc_access_token: str = ""
     volc_tts_api_key: str = ""
     volc_tts_voice_type: str = "zh_female_vv_uranus_bigtts"
 

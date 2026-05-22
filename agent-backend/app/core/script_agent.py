@@ -21,6 +21,7 @@ class ScriptAgent:
             api_key=settings.openai_api_key,
             base_url=settings.openai_base_url,
             temperature=0.7,
+            request_timeout=120,  # 120s 超时，防止 API 卡死
         )
 
     async def generate(

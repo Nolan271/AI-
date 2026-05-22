@@ -2,6 +2,8 @@
 
 import asyncio
 import json
+import logging
+import re
 import uuid
 from pathlib import Path
 
@@ -21,6 +23,8 @@ from app.design_system.master import get_default_design_system, parse_master_md
 
 router = APIRouter(prefix="/api/v1", tags=["video"])
 
+logger = logging.getLogger("routes")
+
 # 内存中的项目状态（生产环境应使用数据库）
 projects: dict[str, VideoProject] = {}
 pipeline = VideoPipeline()
@@ -34,7 +38,7 @@ async def create_project(
     scene_count: int = Form(7),
     total_duration_seconds: int = Form(173),
     narration_language: str = Form("zh-CN"),
-    voice_type: str = Form("zh_female_vv_jupiter_bigtts"),
+    voice_type: str = Form("zh_female_vv_uranus_bigtts"),
     files: list[UploadFile] = File(default=None),
 ):
     """创建视频项目：上传文档 → AI 分析 → 生成视频（SSE 流式返回进度）"""
@@ -81,6 +85,7 @@ async def create_project(
                     "project": project.model_dump(),
                 })
             except Exception as e:
+                logger.exception(f"[Backend] pipeline.run() 异常: {e}")
                 await queue.put({
                     "type": "error",
                     "step": "error",
@@ -129,6 +134,7 @@ async def rerender_project(project_id: str):
         return project.model_dump()
     except Exception as e:
         project.status = "failed"
+        logger.exception(f"[Backend] rerender 失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -182,35 +188,29 @@ async def polish_description(req: PolishRequest):
         base_url=settings.openai_base_url,
         temperature=0.3,
     )
-    system_prompt = """# Role
-你是一名资深的视频策划顾问与文案专家。你的任务是根据用户的原始需求描述，发挥专业想象力，将其扩展成一份结构清晰的视频项目需求说明。
+    system_prompt = """你是一名资深的视频策划顾问。根据用户的原始需求，将其扩展成以下4个板块。注意：输出内容在第四个板块后必须立即结束，不能有任何后续内容。
 
-## 输出结构（严格按以下4个板块）
-只输出以下4个板块，不要添加其他任何板块（如项目名称、场景结构、时长建议、交付物等）：
+一、项目概述：对项目背景、目的、内容的整体描述。
+二、目标受众：明确视频的观看对象是谁。
+三、核心信息：视频需要传达的核心要点和关键信息。
+四、视频风格与基调：视频的整体风格、调性、视觉方向建议。
 
-**一、 项目概述**
-对项目背景、目的、内容的整体描述。
-
-**二、 目标受众**
-明确视频的观看对象是谁。
-
-**三、 核心信息**
-视频需要传达的核心要点和关键信息。
-
-**四、 视频风格与基调**
-视频的整体风格、调性、视觉方向建议。
-
-## 核心原则
-- **严格以用户需求描述为核心方向，用户说什么就围绕什么展开。**
-- **基于用户的行业和场景做合理推断，补全用户没想到但应该有的内容。**
-- **语言风格：** 专业、干练、商务化。
-- **不要反问用户、不要提问。** 用户给多少就基于多少做扩展。"""
+以用户需求为核心方向，基于用户行业做合理扩展。语言专业干练。不要提问。"""
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{text}"),
     ])
     result = await llm.ainvoke(prompt.format_messages(text=req.text))
-    return {"polished": result.content.strip()}
+    text = result.content.strip()
+    # 移除第5个板块及以后的所有内容
+    for sep in ["五、", "## 五", "### 五", "**五、**", "5.", "五）", "五："]:
+        idx = text.find(sep)
+        if idx >= 0:
+            text = text[:idx].strip()
+            break
+    # 移除末尾的 --- 分割线
+    text = re.sub(r"\n---{3,}.*", "", text, flags=re.DOTALL).strip()
+    return {"polished": text}
 
 
 @router.post("/tts/synthesize")
@@ -235,6 +235,7 @@ async def synthesize_speech(
             filename=file_name,
         )
     except Exception as e:
+        logger.exception(f"[Backend] TTS 合成失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -256,4 +257,25 @@ async def get_project_audio(project_id: str):
         path=str(audio_path),
         media_type="audio/mpeg",
         filename=f"{project_id}_narration.mp3",
+    )
+
+
+@router.get("/projects/{project_id}/video")
+async def get_project_video(project_id: str):
+    """获取最终合成视频 MP4"""
+    if project_id not in projects:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    project = projects[project_id]
+    if not project.video_path:
+        raise HTTPException(status_code=404, detail="No video generated for this project")
+
+    video_path = Path(project.video_path)
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail="Video file not found on disk")
+
+    return FileResponse(
+        path=str(video_path),
+        media_type="video/mp4",
+        filename=f"{project_id}.mp4",
     )

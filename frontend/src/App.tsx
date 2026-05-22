@@ -35,14 +35,14 @@ function App() {
   const [projects, setProjects] = useState<Project[]>([])
   const [error, setError] = useState('')
   const [voices, setVoices] = useState<Record<string, Array<{name: string, id: string}>>>({})
-  const [voiceType, setVoiceType] = useState('zh_female_vv_jupiter_bigtts')
+  const [voiceType, setVoiceType] = useState('zh_female_vv_uranus_bigtts')
   const [progressMsg, setProgressMsg] = useState('')
 
   useEffect(() => {
     fetch(`${API_BASE}/tts/voices`)
       .then(res => res.json())
       .then(data => setVoices(data))
-      .catch(() => {})
+      .catch(err => console.error('[Frontend] 获取音色列表失败:', err))
   }, [])
 
   const fileRef = useRef<HTMLInputElement>(null)
@@ -66,6 +66,7 @@ function App() {
       const data = await res.json()
       setDescription(data.polished)
     } catch (err: any) {
+      console.error('[Frontend] 润色请求失败:', err)
       setError(err.message)
     } finally {
       setPolishing(false)
@@ -135,10 +136,13 @@ function App() {
             } else if (event.type === 'error') {
               throw new Error(event.message)
             }
-          } catch { /* skip malformed events */ }
+          } catch (parseErr) {
+              console.warn('[Frontend] SSE 解析异常:', parseErr, '原始行:', line)
+            }
         }
       }
     } catch (err: any) {
+      console.error('[Frontend] 视频生成请求失败:', err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -282,11 +286,33 @@ function App() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 600 }}>生成结果</h2>
               <span className={`status-badge ${project.status}`}>
-                {project.status === 'generated' ? '生成完成' :
+                {project.status === 'completed' ? '合成完成' :
+                 project.status === 'rendered' ? '渲染完成' :
+                 project.status === 'html_generated' ? 'HTML 已生成' :
+                 project.status === 'generated' ? '生成完成' :
                  project.status === 'generating' ? '生成中' :
                  project.status === 'failed' ? '失败' : '待处理'}
               </span>
             </div>
+
+            {/* 视频下载 */}
+            {project.video_path && (
+              <div style={{ marginBottom: 16, padding: 12, background: '#f0fdf4', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <a
+                  href={`${API_BASE}/projects/${project.id}/video`}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '10px 20px', background: '#22c55e', color: 'white',
+                    borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none',
+                  }}
+                  download
+                >
+                  <Play size={16} />
+                  下载视频 (MP4)
+                </a>
+                <span style={{ fontSize: 13, color: '#166534' }}>视频已合成完毕，点击下载</span>
+              </div>
+            )}
 
             <div style={{ marginBottom: 12 }}>
               <h3 style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>解说脚本</h3>
@@ -300,7 +326,7 @@ function App() {
                 场景规划（{project.scenes.length} 个场景）
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {project.scenes.map((scene) => (
+                {project.scenes.map((scene: any) => (
                   <div key={scene.index} style={{ display: 'flex', gap: 12, padding: '10px 12px', background: '#f8fafc', borderRadius: 8, fontSize: 13 }}>
                     <span style={{ color: '#f97316', fontWeight: 600, minWidth: 24 }}>#{scene.index}</span>
                     <div style={{ flex: 1 }}>
