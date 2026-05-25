@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import shutil
+import subprocess
 import uuid
 from pathlib import Path
 from typing import Optional, Callable, Awaitable
@@ -263,15 +264,16 @@ class VideoPipeline:
                 "--output", str(output_path), "--no-audio",
             ]
 
-        proc = await asyncio.create_subprocess_exec(
-            *cmd,
+        proc = await asyncio.to_thread(
+            subprocess.run,
+            cmd,
             cwd=str(output_dir),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
         )
-        stdout, stderr = await proc.communicate()
-        stdout_str = stdout.decode('utf-8', errors='replace')[:2000]
-        stderr_str = stderr.decode('utf-8', errors='replace')[:2000]
+        stdout_str = proc.stdout.decode('utf-8', errors='replace')[:2000]
+        stderr_str = proc.stderr.decode('utf-8', errors='replace')[:2000]
         logger.info("HyperFrames render stderr:\n%s", stderr_str)
         if proc.returncode != 0:
             raise RuntimeError(
@@ -327,6 +329,7 @@ def _adjust_scene_timings(
             narration_text=scene.narration_text,
             visual_style=scene.visual_style,
             visual_keywords=scene.visual_keywords,
+            template_type=scene.template_type,
         ))
         current_time += duration
     return adjusted

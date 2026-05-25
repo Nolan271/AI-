@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import subprocess
 from pathlib import Path
 
 FFPROBE_PATH = r"D:\Users\muzhi\Desktop\hhDome\ffmpeg-bin\ffprobe.exe"
@@ -17,13 +18,10 @@ async def get_audio_duration(audio_path: Path) -> float:
         "-show_format",
         str(audio_path),
     ]
-    proc = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
-    )
-    stdout, stderr = await proc.communicate()
+    proc = await _run_process(cmd)
     if proc.returncode != 0:
-        raise RuntimeError(f"ffprobe failed: {stderr.decode()}")
-    info = json.loads(stdout.decode())
+        raise RuntimeError(f"ffprobe failed: {_decode_output(proc.stderr)}")
+    info = json.loads(_decode_output(proc.stdout))
     return float(info["format"]["duration"])
 
 
@@ -46,10 +44,22 @@ async def compose_audio_video(
         "-y",
         str(output_path),
     ]
-    proc = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
-    )
-    _, stderr = await proc.communicate()
+    proc = await _run_process(cmd)
     if proc.returncode != 0:
-        raise RuntimeError(f"ffmpeg composition failed: {stderr.decode()}")
+        raise RuntimeError(f"ffmpeg composition failed: {_decode_output(proc.stderr)}")
     return output_path
+
+
+async def _run_process(cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
+    """Run a CLI command without relying on Windows asyncio subprocess support."""
+    return await asyncio.to_thread(
+        subprocess.run,
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+
+def _decode_output(data: bytes) -> str:
+    return data.decode("utf-8", errors="replace")
